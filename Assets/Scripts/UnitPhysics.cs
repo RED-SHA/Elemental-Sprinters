@@ -11,8 +11,6 @@ public class UnitPhysics : MonoBehaviour
 
     private void Start()
     {
-        // Initialize the UnitStatus object
-        unitStatus.SetUnitStatus(2f, 0f, "Unit", 5f, "", false, 1, 1f);
         rigidbody = GetComponent<Rigidbody>();
     }
 
@@ -20,7 +18,7 @@ public class UnitPhysics : MonoBehaviour
     {
         if (unitStatus.IsRunable)
         {
-            rigidbody.velocity = new Vector3(unitStatus.velocity, 0f, 0f);
+            rigidbody.velocity = new Vector3(unitStatus.velocity, rigidbody.velocity.y, 0f);
         }
     }
 

@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class UnitStatus : MonoBehaviour
 {
+    public string preInputValue;
     public float velocity { get; private set; }
     public bool IsRunable { get; private set; }
-    public string name { get; private set; }
+    public string Name;
     private bool IsBuff;
-    private string preInputValue;
     public float buffRemainTime { get; private set; }
     private float maxVelocity;
     private float endurance;
@@ -24,7 +24,7 @@ public class UnitStatus : MonoBehaviour
     {
         this.maxVelocity = maxVelocity;
         this.velocity = velocity;
-        this.name = name;
+        this.Name = name;
         this.buffRemainTime = buffRemainTime;
         this.preInputValue = preInputValue;
         this.IsRunable = IsRunable;

@@ -8,6 +8,8 @@ public class UnitController : MonoBehaviour
     public float BuffDuration;
     public static PlayerEnum crnEnum;
     public  PlayerEnum PrevEnum;
+    public UnitCamController Cam;
+    public UnitStatus Status;
     [SerializeField] private UnitPhysics unitPhysics;
 
 /*    public delegate void EnterDelegate();
@@ -27,20 +29,8 @@ public class UnitController : MonoBehaviour
     }
     private void Update()
     {
-        // Check for input to switch back to run state:
-        if (Input.GetKeyUp(KeyCode.LeftShift))
-        {
-            if (fsm.GetCurrentState() == PlayerEnum.Run)
-            {
-                fsm.ChangeState(PlayerEnum.Idle);
-            }
-            else
-            {
-                fsm.ChangeState(PlayerEnum.Run);
-            }
-        }
         fsm.Update();
-        print(crnEnum);
+        //print(crnEnum);
     }
 
     
@@ -113,8 +103,8 @@ public class UnitController : MonoBehaviour
 
     private void Buff_Enter()
     {
-        animator.SetTrigger("tBuff");
         unitPhysics.StopRun();
+        animator.SetTrigger("tBuff");
         unitPhysics.StartBuff();
     }
     private void Sprint_Enter()
@@ -135,13 +125,17 @@ public class UnitController : MonoBehaviour
 
     private void Idle_Update()
     {
-        print("Im Idle!");
+        //print("Im Idle!");
     }
     private void Run_Update()
     {
     }
     private void Hit_Update()
     {
+        if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+        {
+            StartState(PrevEnum);
+        }
     }
 
     private void Roll_Front_Update()
