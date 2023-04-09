@@ -3847,8 +3847,8 @@ MonoBehaviour:
   - {fileID: 1748104144}
   - {fileID: 1776328126}
   - {fileID: 1891347883}
-  GamerCount: 6
-  GameStage: 4
+  GamerCount: 4
+  GameStage: 5
   NowStage: 0
   IsCamOnMe: 0
   Answer: 

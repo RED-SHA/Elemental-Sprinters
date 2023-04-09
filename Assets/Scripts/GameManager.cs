@@ -100,7 +100,7 @@ public class GameManager : MonoBehaviour
     public void BattlePhase(int stage, char AnswerChar)
     {
         int Answer = AnswerChar - '0';
-        string AppendText = $"{NowStage / GameStage - 1}번째 가위바위보!\n";
+        string AppendText = $"{NowStage} / {GameStage}번째 가위바위보!\n";
 
         foreach (var controller in Controllers)
         {
@@ -154,6 +154,12 @@ public class GameManager : MonoBehaviour
             CanvasGame.Instance.AnnounceText.text = "남은 기회가 없습니다";
             CanvasGame.Instance.Toasting();
             print("남은 기회가 없습니다");
+            return;
+        }
+        if (Answer == "")
+        {
+            CanvasGame.Instance.AnnounceText.text = "아직 달리기전입니다!";
+            CanvasGame.Instance.Toasting();
             return;
         }
         BattlePhase(NowStage, Answer[NowStage++]);
