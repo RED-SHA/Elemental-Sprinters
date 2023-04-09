@@ -7,6 +7,7 @@ public class UnitController : MonoBehaviour
     public Animator animator;
     public float BuffDuration;
     public static PlayerEnum crnEnum;
+    public  PlayerEnum PrevEnum;
     [SerializeField] private UnitPhysics unitPhysics;
 
 /*    public delegate void EnterDelegate();
@@ -21,6 +22,7 @@ public class UnitController : MonoBehaviour
 
     private void Awake()
     {
+        fsm = new();
         AddFSMStates();
     }
     private void Update()
@@ -91,6 +93,7 @@ public class UnitController : MonoBehaviour
 
     private void Roll_Back_Enter()
     {
+        unitPhysics.StopRun();
         unitPhysics.DecreaseSpeed();
         animator.SetTrigger("tRollBackward");
     }
@@ -143,10 +146,18 @@ public class UnitController : MonoBehaviour
 
     private void Roll_Front_Update()
     {
+        if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+        {
+            StartState(PrevEnum);
+        }
     }
 
     private void Roll_Back_Update()
     {
+        if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+        {
+            StartState(PrevEnum);
+        }
     }
 
     private void Block_Update()
@@ -163,7 +174,6 @@ public class UnitController : MonoBehaviour
 
     private void Buff_Update()
     {
-        print(animator.GetCurrentAnimatorStateInfo(0).normalizedTime);
         if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
         {
             StartState(PlayerEnum.Sprint);
@@ -189,9 +199,11 @@ public class UnitController : MonoBehaviour
 
     private void Idle_Exit()
     {
+        PrevEnum = PlayerEnum.Idle;
     }
     private void Run_Exit()
     {
+        PrevEnum = PlayerEnum.Run;
         unitPhysics.StopRun();
         animator.SetBool("bRun", false);
     }
@@ -205,6 +217,7 @@ public class UnitController : MonoBehaviour
 
     private void Roll_Back_Exit()
     {
+        unitPhysics.StartRun();
     }
 
     private void Block_Exit()
@@ -315,8 +328,6 @@ public class UnitController : MonoBehaviour
     {
         fsm.ChangeState(PlayerEnum.Sprint);
     }
-
-
     public void StartDeath()
     {
         fsm.ChangeState(PlayerEnum.Death);
