@@ -2,9 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class UnitController : MonoBehaviour
 {
     public Animator animator;
+
+/*    public delegate void EnterDelegate();
+    public delegate void UpdateDelegate();
+    public delegate void ExitDelegate();
+
+    List<EnterDelegate> EnterDel = new();
+    List<UpdateDelegate> UpdateDel = new();
+    List<ExitDelegate> ExitDel = new();*/
 
     private FSM fsm;
 
@@ -48,7 +56,6 @@ public class PlayerController : MonoBehaviour
         fsm.SetInitialState(PlayerEnum.Idle);
     }
 
-
     #region FSM state functions:
     // FSM state functions:
 
@@ -75,18 +82,19 @@ public class PlayerController : MonoBehaviour
 
     private void Roll_Back_Enter()
     {
-        animator.SetTrigger("tRollBackWard");
+        animator.SetTrigger("tRollBackward");
     }
 
     private void Block_Enter()
     {
         animator.SetTrigger("tBlock");
-        animator.SetBool("bBlcok", true);
+        animator.SetBool("bBlock", true);
     }
 
     private void Start_Enter()
     {
         animator.SetTrigger("tStart");
+        animator.SetBool("bRun", true);
     }
 
     private void Buff_Enter()
@@ -106,6 +114,7 @@ public class PlayerController : MonoBehaviour
 
     private void Idle_Update()
     {
+        print("Im Idle!");
     }
     private void Run_Update()
     {
@@ -146,6 +155,7 @@ public class PlayerController : MonoBehaviour
     }
     private void Run_Exit()
     {
+        animator.SetBool("bRun", false);
     }
     private void Hit_Exit()
     {
@@ -161,6 +171,7 @@ public class PlayerController : MonoBehaviour
 
     private void Block_Exit()
     {
+        animator.SetBool("bBlock", false);
     }
 
     private void Start_Exit()
@@ -169,19 +180,58 @@ public class PlayerController : MonoBehaviour
 
     private void Buff_Exit()
     {
+        animator.SetBool("bSprint", false);
     }
 
     private void Death_Exit()
     {
+        animator.SetBool("bDeath", false);
     }
 
     #endregion
 
-
     #endregion
 
 
-    #region triggering FSM transitions:
+    #region FSM Triggers :
+
+    public void StartState(PlayerEnum state)
+    {
+        switch (state)
+        {
+            case PlayerEnum.Idle:
+                StartIdle();
+                break;
+            case PlayerEnum.Run:
+                StartRunning();
+                break;
+            case PlayerEnum.Hit:
+                StartHit();
+                break;
+            case PlayerEnum.Roll_Front:
+                StartRoll_Front();
+                break;
+            case PlayerEnum.Roll_Back:
+                StartRoll_Back();
+                break;
+            case PlayerEnum.Block:
+                StartBlocking();
+                break;
+            case PlayerEnum.Start:
+                StartStart();
+                break;
+            case PlayerEnum.Buff:
+                StartBuff();
+                break;
+            case PlayerEnum.Death:
+                StartDeath();
+                break;
+            default:
+                break;
+        }
+
+    }
+
     public void StartIdle()
     {
         fsm.ChangeState(PlayerEnum.Idle);
@@ -204,7 +254,7 @@ public class PlayerController : MonoBehaviour
     }
     public void StartBlocking()
     {
-        fsm.ChangeState(PlayerEnum.Run);
+        fsm.ChangeState(PlayerEnum.Block);
     }
     public void StartStart()
     {
