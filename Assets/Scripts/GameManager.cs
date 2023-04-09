@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
 
     public List<UnitController> Controllers = new();
     public Transform[] SpawnPoint;
-    public int GamerCount = 6;
+    public int GamerCount = 4;
     public int GameStage = 10;
     public int NowStage = 0;
     public bool IsCamOnMe= false;
@@ -100,7 +100,7 @@ public class GameManager : MonoBehaviour
     public void BattlePhase(int stage, char AnswerChar)
     {
         int Answer = AnswerChar - '0';
-        string AppendText = "";
+        string AppendText = $"{NowStage / GameStage - 1}번째 가위바위보!\n";
 
         foreach (var controller in Controllers)
         {
