@@ -5,6 +5,9 @@ using UnityEngine;
 public class UnitController : MonoBehaviour
 {
     public Animator animator;
+    public float BuffDuration;
+    public static PlayerEnum crnEnum;
+    [SerializeField] private UnitPhysics unitPhysics;
 
 /*    public delegate void EnterDelegate();
     public delegate void UpdateDelegate();
@@ -35,9 +38,10 @@ public class UnitController : MonoBehaviour
             }
         }
         fsm.Update();
-        
+        print(crnEnum);
     }
 
+    
     private void AddFSMStates()
     {
         // Initialize the FSM with the following states:
@@ -50,6 +54,7 @@ public class UnitController : MonoBehaviour
         fsm.AddState(PlayerEnum.Block, Block_Enter, Block_Exit, Block_Update) ;
         fsm.AddState(PlayerEnum.Start, Start_Enter, Start_Exit , Start_Update);
         fsm.AddState(PlayerEnum.Buff, Buff_Enter, Buff_Exit, Buff_Update);
+        fsm.AddState(PlayerEnum.Sprint, Sprint_Enter, Sprint_Exit, Sprint_Update);
         fsm.AddState(PlayerEnum.Death, Death_Enter, Death_Exit, Death_Update);
 
         // Set the initial state to "Idle":
@@ -62,31 +67,37 @@ public class UnitController : MonoBehaviour
     #region EnterPhase
     private void Idle_Enter()
     {
+        unitPhysics.StopRun();
         animator.SetBool("bRun", false);
     }
 
     private void Run_Enter()
     {
+        unitPhysics.StartRun();
         animator.SetBool("bRun", true);
     }
 
     private void Hit_Enter()
     {
+        unitPhysics.DecreaseSpeed();
         animator.SetTrigger("tHit");
     }
 
     private void Roll_Front_Enter()
     {
+        unitPhysics.DecreaseSpeed();
         animator.SetTrigger("tRollForward");
     }
 
     private void Roll_Back_Enter()
     {
+        unitPhysics.DecreaseSpeed();
         animator.SetTrigger("tRollBackward");
     }
 
     private void Block_Enter()
     {
+        unitPhysics.DecreaseSpeed();
         animator.SetTrigger("tBlock");
         animator.SetBool("bBlock", true);
     }
@@ -100,11 +111,18 @@ public class UnitController : MonoBehaviour
     private void Buff_Enter()
     {
         animator.SetTrigger("tBuff");
-        animator.SetBool("bSprint", true);
+        unitPhysics.StopRun();
+        unitPhysics.StartBuff();
     }
-
+    private void Sprint_Enter()
+    {
+        animator.SetBool("bSprint", true);
+        BuffDuration = unitPhysics.SprintTime();
+        unitPhysics.StartRun();
+    }
     private void Death_Enter()
     {
+        unitPhysics.StopRun();
         animator.SetTrigger("tDeath");
         animator.SetBool("bDeath", true);
     }
@@ -137,12 +155,31 @@ public class UnitController : MonoBehaviour
 
     private void Start_Update()
     {
+        if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+        {
+            StartState(PlayerEnum.Run);
+        }
     }
 
     private void Buff_Update()
     {
+        print(animator.GetCurrentAnimatorStateInfo(0).normalizedTime);
+        if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+        {
+            StartState(PlayerEnum.Sprint);
+        }
     }
-
+    private void Sprint_Update()
+    {
+        if (BuffDuration > 0)
+        {
+            BuffDuration -= Time.deltaTime;
+        }
+        else
+        {
+            StartState(PlayerEnum.Run);
+        }
+    }
     private void Death_Update()
     {
     }
@@ -155,6 +192,7 @@ public class UnitController : MonoBehaviour
     }
     private void Run_Exit()
     {
+        unitPhysics.StopRun();
         animator.SetBool("bRun", false);
     }
     private void Hit_Exit()
@@ -176,13 +214,19 @@ public class UnitController : MonoBehaviour
 
     private void Start_Exit()
     {
+        unitPhysics.StartRun();
     }
 
     private void Buff_Exit()
     {
+        animator.SetBool("bSprint", true);
+    }
+    private void Sprint_Exit()
+    {
+        unitPhysics.StopBuff();
+        BuffDuration = 0;
         animator.SetBool("bSprint", false);
     }
-
     private void Death_Exit()
     {
         animator.SetBool("bDeath", false);
@@ -222,6 +266,9 @@ public class UnitController : MonoBehaviour
                 break;
             case PlayerEnum.Buff:
                 StartBuff();
+                break;
+            case PlayerEnum.Sprint:
+                StartSprint();
                 break;
             case PlayerEnum.Death:
                 StartDeath();
@@ -264,6 +311,11 @@ public class UnitController : MonoBehaviour
     {
         fsm.ChangeState(PlayerEnum.Buff);
     }
+    public void StartSprint()
+    {
+        fsm.ChangeState(PlayerEnum.Sprint);
+    }
+
 
     public void StartDeath()
     {

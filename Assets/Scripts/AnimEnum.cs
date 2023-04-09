@@ -8,5 +8,6 @@ public enum PlayerEnum
     Block,
     Start,
     Buff,
+    Sprint,
     Death,
 }

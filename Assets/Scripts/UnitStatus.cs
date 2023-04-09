@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class UnitStatus : MonoBehaviour
 {
-    public bool IsRunable { get; private set; }
-    private bool IsBuff;
-    private float maxVelocity;
     public float velocity { get; private set; }
-    private string name;
-    private float buffRemainTime;
+    public bool IsRunable { get; private set; }
+    public string name { get; private set; }
+    private bool IsBuff;
     private string preInputValue;
+    public float buffRemainTime { get; private set; }
+    private float maxVelocity;
     private float endurance;
     private float strength;
 
@@ -39,12 +39,16 @@ public class UnitStatus : MonoBehaviour
         {
             if (IsBuff)
             {
-                velocity += Time.deltaTime * strength;
+                velocity += Time.deltaTime * strength * 2f;
                 return;
             }
 
             if (velocity < maxVelocity)
             {
+                if (velocity <= 1)
+                {
+                    velocity += Time.deltaTime * strength * 10;
+                }
                 velocity += Time.deltaTime * strength;
             }
             else if (velocity > maxVelocity)

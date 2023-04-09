@@ -41,6 +41,7 @@ public class FSM
             currentState.Exit();
             currentState = states[name];
             currentState.Enter();
+            UnitController.crnEnum = name;
         }
         else
         {
